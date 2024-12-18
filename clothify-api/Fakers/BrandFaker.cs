@@ -1,12 +1,13 @@
 ﻿using Bogus;
-using WebApplication1.Models;
+using clothify_api.Models;
 
-namespace WebApplication1.Fakers;
+namespace clothify_api.Fakers;
 
 public class BrandFaker : Faker<Brand>
 {
     public BrandFaker()
     {
+        Locale="vi";
         RuleFor(b => b.Name, f => f.Company.CompanyName());
         RuleFor(b => b.Image, f => f.Image.PicsumUrl());
         RuleFor(b => b.Description, f => f.Lorem.Sentence());

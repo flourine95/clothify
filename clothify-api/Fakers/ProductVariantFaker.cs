@@ -1,7 +1,7 @@
 ﻿using Bogus;
-using WebApplication1.Models;
+using clothify_api.Models;
 
-namespace WebApplication1.Fakers;
+namespace clothify_api.Fakers;
 
 public class ProductVariantFaker : Faker<ProductVariant>
 {
@@ -10,6 +10,7 @@ public class ProductVariantFaker : Faker<ProductVariant>
 
     public ProductVariantFaker()
     {
+        Locale="vi";
         RuleFor(pv => pv.Size, f => f.PickRandom(Sizes)); 
         RuleFor(pv => pv.Color, f => f.PickRandom(Colors)); 
         RuleFor(pv => pv.Price, f => f.Random.Decimal(1, 100));

@@ -1,7 +1,7 @@
 ﻿using Bogus;
-using WebApplication1.Models;
+using clothify_api.Models;
 
-namespace WebApplication1.Fakers;
+namespace clothify_api.Fakers;
 
 public class ProductReviewFaker : Faker<ProductReview>
 {
@@ -28,9 +28,11 @@ public class ProductReviewFaker : Faker<ProductReview>
         "I was looking for a comfortable but stylish pair of pants, and these are it!",
         "Absolutely love these boots! They are stylish and very comfortable."
     ];
+    
 
     public ProductReviewFaker()
     {
+        Locale="vi";
         RuleFor(pr => pr.UserId, f => f.Random.Int(1, 1000));
         RuleFor(pr => pr.Rating, f => f.Random.Byte(1, 5));
         RuleFor(pr => pr.ReviewText, f => f.PickRandom(ReviewTexts));

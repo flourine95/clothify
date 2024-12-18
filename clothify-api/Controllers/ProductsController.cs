@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using clothify_api.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Models;
 
-namespace WebApplication1.Controllers;
+namespace clothify_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

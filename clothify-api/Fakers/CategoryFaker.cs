@@ -1,12 +1,13 @@
 ﻿using Bogus;
-using WebApplication1.Models;
+using clothify_api.Models;
 
-namespace WebApplication1.Fakers;
+namespace clothify_api.Fakers;
 
 public class CategoryFaker : Faker<Category>
 {
     public CategoryFaker()
     {
+        Locale="vi";
         RuleFor(c => c.Name, f => f.Commerce.Categories(1)[0]);
         RuleFor(c => c.Image, f => f.Image.PicsumUrl());
         RuleFor(c => c.Description, f => f.Lorem.Sentence());

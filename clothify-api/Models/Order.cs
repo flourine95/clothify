@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Models;
+﻿namespace clothify_api.Models;
 
 public class Order
 {

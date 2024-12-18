@@ -1,11 +1,11 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using clothify_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using WebApplication1.Models;
 
-namespace WebApplication1.Controllers;
+namespace clothify_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

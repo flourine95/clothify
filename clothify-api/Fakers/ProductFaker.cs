@@ -1,12 +1,13 @@
 ﻿using Bogus;
-using WebApplication1.Models;
+using clothify_api.Models;
 
-namespace WebApplication1.Fakers;
+namespace clothify_api.Fakers;
 
 public class ProductFaker : Faker<Product>
 {
     public ProductFaker()
     {
+        Locale="vi";
         RuleFor(p => p.Name, f => f.Commerce.ProductName());
         RuleFor(p => p.Description, f => f.Lorem.Paragraph());
         RuleFor(p => p.Price, f => decimal.Parse(f.Commerce.Price())); // Đảm bảo kiểu dữ liệu là decimal
