@@ -18,4 +18,5 @@ public class ProductVariantFaker : Faker<ProductVariant>
         RuleFor(pv => pv.CreatedAt, f => f.Date.Past());
         RuleFor(pv => pv.UpdatedAt, f => f.Date.Recent());
     }
+    // test commit 2
 }
