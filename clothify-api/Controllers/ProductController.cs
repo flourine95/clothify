@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace clothify_api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/products")]
 public class ProductController(AppDbContext context) : ControllerBase
 {
     [HttpGet]
@@ -17,16 +17,70 @@ public class ProductController(AppDbContext context) : ControllerBase
             .ToListAsync();
     }
     
-    [Route("/test")]
-    [HttpGet]
-    public async Task<List<Product>> get5Products()
+    [HttpGet("random")]
+    public async Task<IActionResult> GetRandomProducts([FromQuery] int count = 6)
     {
-        return  await context.Products
-            .Include(p => p.Category)
-            .Include(p => p.Brand)
-            .Take(5)
+        var randomProducts = await context.Products
+            .OrderBy(p => Guid.NewGuid()) // Sắp xếp ngẫu nhiên bằng GUID
+            .Take(count) // Giới hạn số lượng sản phẩm trả về
+            .Select(p => new {
+                p.Id,
+                p.Name,
+                p.Price,
+                ImageUrl = p.ProductImages.FirstOrDefault()!.Image // Lấy ảnh đầu tiên của sản phẩm
+            })
             .ToListAsync();
+
+        return Ok(randomProducts);
     }
+
+    [HttpGet("featured")]
+    public async Task<IActionResult> GetFeaturedProducts([FromQuery] int count = 3)
+    {
+        var products = await context.Products
+            .Where(p => p.IsFeatured) // Lọc sản phẩm nổi bật
+            .OrderByDescending(p => p.CreatedAt) // Sắp xếp theo ngày tạo mới nhất
+            .Take(count) // Giới hạn số lượng sản phẩm trả về
+            .Include(p => p.ProductImages) // Bao gồm hình ảnh sản phẩm
+            .Select(p => new {
+                p.Id,
+                p.Name,
+                p.Price,
+                 p.AverageRating, // Đánh giá trung bình
+                ReviewCount = context.ProductReviews.Count(r => r.ProductId == p.Id), // Đếm số lượng đánh giá
+                p.Description,
+                ImageUrl = p.ProductImages.FirstOrDefault() // Ảnh sản phẩm
+            })
+            .ToListAsync();
+
+        return Ok(products);
+    }
+
+
+
+    
+    [HttpGet("new-arrivals")]
+    public async Task<IActionResult> GetNewProducts([FromQuery] int count = 5)
+    {
+        var products = await context.Products
+            .OrderByDescending(p => p.CreatedAt) // Sắp xếp theo ngày tạo mới nhất
+            .Take(count) // Giới hạn số lượng sản phẩm trả về
+            .Select(p => new {
+                p.Id,
+                p.Name,
+                p.Price,
+                p.CreatedAt,
+                ImageUrl = p.ProductImages.FirstOrDefault()!.Image 
+            })
+            .ToListAsync();
+
+        return Ok(products);
+    }
+
+
+    
+
+    
 
 
     [HttpGet("{id}")]
