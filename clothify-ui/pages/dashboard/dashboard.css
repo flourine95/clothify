@@ -1,0 +1,52 @@
+.bg-success-lighten {
+    background-color: rgba(66, 210, 157, .25) !important;
+}
+
+.text-success {
+    color: #42d29d !important;
+}
+
+.widget-icon {
+    color: #3688fc;
+    font-size: 20px;
+    background-color: rgba(54, 136, 252, .25);
+    height: 40px;
+    width: 40px;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.float-right {
+    float: right !important;
+}
+
+.text-danger {
+    color: #fa6767 !important;
+}
+
+.bg-danger-lighten {
+    background-color: rgba(250, 103, 103, .25) !important;
+}
+
+.text-warning {
+    color: #f9bc0d !important;
+}
+
+.bg-warning-lighten {
+    background-color: rgba(249, 188, 13, .25) !important;
+}
+
+.text-info {
+    color: #44badc !important;
+}
+
+.bg-info-lighten {
+    background-color: rgba(68, 186, 220, .25) !important;
+}
+
+.widget-flat {
+    position: relative;
+    overflow: hidden;
+}
