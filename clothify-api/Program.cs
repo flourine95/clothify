@@ -14,7 +14,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         connectionString,
         ServerVersion.AutoDetect(connectionString)
     ));
-
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer(); // API Explorer để tích hợp với Swagger
@@ -32,19 +45,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-var key = Encoding.ASCII.GetBytes("YourSecretKeyHere"); // Khóa bí mật
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ClockSkew = TimeSpan.Zero
-        };
-    });
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -94,7 +94,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication(); // Sử dụng Authentication
 app.UseAuthorization();  // Sử dụng Authorization
 app.UseCors(myAllowSpecificOrigins);
-
+app.UseDeveloperExceptionPage();
 // Định tuyến các controller
 app.MapControllers();
 
