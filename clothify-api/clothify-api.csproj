@@ -10,6 +10,12 @@
     <ItemGroup>
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Bogus" Version="35.6.1" />
+        <PackageReference Include="CKSource.CKFinder" Version="3.5.2" />
+        <PackageReference Include="CKSource.CKFinder.Connector.Config" Version="3.5.2" />
+        <PackageReference Include="CKSource.CKFinder.Connector.Core" Version="3.5.2" />
+        <PackageReference Include="CKSource.CKFinder.Connector.Host.Owin" Version="3.5.2" />
+        <PackageReference Include="CKSource.CKFinder.Connector.KeyValue.FileSystem" Version="3.5.2" />
+        <PackageReference Include="CKSource.CKFinder.Connector.Logs.NLog" Version="3.5.2" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.11"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
@@ -27,6 +33,10 @@
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.2.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.2.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Assets\Images\" />
     </ItemGroup>
 
 </Project>

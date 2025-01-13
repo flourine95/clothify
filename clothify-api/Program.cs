@@ -39,8 +39,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: myAllowSpecificOrigins,
         policy =>
         {
-            policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+            policy
                 .AllowAnyHeader()
+                .AllowAnyOrigin()
                 .AllowAnyMethod();
         });
 });
@@ -49,22 +50,29 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     if (!context.Users.Any())
     {
+        
         var userFaker = new UserFaker();
         var productFaker = new ProductFaker();
         var categoryFaker = new CategoryFaker();
         var brandFaker = new BrandFaker();
-
-        var users = userFaker.Generate(1000);
-        await context.Users.AddRangeAsync(users);
-
+        var saleFaker = new SaleFaker();
+        
         var categories = categoryFaker.Generate(10);
         await context.Categories.AddRangeAsync(categories);
 
         var brands = brandFaker.Generate(10);
         await context.Brands.AddRangeAsync(brands);
+        
+        var sales = saleFaker.Generate(10);
+        await context.Sales.AddRangeAsync(sales);
+
+        var users = userFaker.Generate(1000);
+        await context.Users.AddRangeAsync(users);
+
+     
 
         var products = new List<Product>();
         for (int i = 0; i < 1000; i++)

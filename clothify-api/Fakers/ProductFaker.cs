@@ -30,6 +30,7 @@ public class ProductFaker : Faker<Product>
         var productImageFaker = new ProductImageFaker();
         var productReviewFaker = new ProductReviewFaker();
         var productVariantFaker = new ProductVariantFaker();
+        var productSaleFaker = new ProductSaleFaker();
 
         var images = productImageFaker.Generate(4);
         foreach (var image in product.ProductImages)
@@ -54,6 +55,12 @@ public class ProductFaker : Faker<Product>
         foreach (var variant in product.ProductVariants)
         {
             variant.ProductId = product.Id;
+        }
+
+        product.ProductSales = productSaleFaker.Generate(2);
+        foreach (var sale in product.ProductSales)
+        {
+            sale.ProductId = product.Id;
         }
 
         return product;

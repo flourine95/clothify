@@ -7,9 +7,9 @@ public class ProductSaleFaker : Faker<ProductSale>
 {
     public ProductSaleFaker()
     {
-        Locale="vi";
-        RuleFor(ps => ps.ProductId, f => f.Random.Int(1, 100)); // Giả định có 100 sản phẩm
-        RuleFor(ps => ps.SaleId, f => f.Random.Int(1, 10)); // Giả định có 10 chương trình khuyến mãi
+        Locale = "vi";
+        RuleFor(ps => ps.ProductId, f => f.Random.Int(1, 1000)); // Giả sử bạn có từ 1 đến 1000 sản phẩm trong bảng Products
+        RuleFor(ps => ps.SaleId, f => f.Random.Int(1, 10));
         RuleFor(ps => ps.CreatedAt, f => f.Date.Past());
         RuleFor(ps => ps.UpdatedAt, f => f.Date.Recent());
     }
