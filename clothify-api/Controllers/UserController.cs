@@ -66,4 +66,18 @@ public class UserController(AppDbContext context) : ControllerBase
 
         return NoContent();
     }
+    [HttpGet("status/{orderId}")]
+    public async Task<IActionResult> GetPaymentStatus(int orderId)
+    {
+        var payment = await context.Payments
+            .FirstOrDefaultAsync(p => p.OrderId == orderId);
+
+        if (payment == null)
+        {
+            return NotFound(new { message = "No payment found for this order" });
+        }
+
+        return Ok(new { status = payment.Status });
+    }
+
 }

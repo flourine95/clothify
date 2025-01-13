@@ -16,7 +16,7 @@ public class AuthController(AppDbContext context, IConfiguration configuration) 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        if (await context.Users.AnyAsync(u => u.Email == request.Email))
+          if (await context.Users.AnyAsync(u => u.Email == request.Email))
             return BadRequest(new { message = "Email đã tồn tại!" });
 
         var user = new User
