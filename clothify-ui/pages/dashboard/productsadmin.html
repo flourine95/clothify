@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 
 <head>
@@ -241,13 +241,13 @@
                     <span>Thông tin cá nhân</span>
                 </a>
             </li>
-            
-        <li class="sidebar-footer">
-            <a href="#" class="sidebar-link">
-                <i class="bi bi-box-arrow-left"></i>
-                <span>Đăng xuất</span>
-            </a>
-        </li>
+
+            <li class="sidebar-footer">
+                <a href="#" class="sidebar-link">
+                    <i class="bi bi-box-arrow-left"></i>
+                    <span>Đăng xuất</span>
+                </a>
+            </li>
 
         </ul>
     </aside>
@@ -468,241 +468,180 @@
 </div>
 <script src="../../assets/libraries/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const hamBurger = document.querySelector(".toggle-btn");
+    const apiUrl = 'https://localhost:44369/api/ProductsAdmin'; // URL của API sản phẩm
 
-    hamBurger.addEventListener("click", function () {
-        document.querySelector("#sidebar").classList.toggle("expand");
-    });
-
-    const findProductById = (id) => {
-        const table = $('#products').DataTable();
-        return table.rows().data().toArray().find(item => item.id === id);
-    }
-
-    const viewProductDetails = (id) => {
-        const product = findProductById(id);
-
-        if (product) {
-            $('#detail-id').text(product.id);
-            $('#detail-name').text(product.name);
-            $('#detail-price').text(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price));
-            $('#detail-category').text(product.category);
-            $('#detail-stock').text(product.stock);
-            $('#detail-created').text(new Date(product.created_at).toLocaleDateString());
-            $('#detail-image').attr('src', product.image);
-
-            $('#productDetailModal').modal('show');
-        }
-    }
-
-    const deleleProduct = (id) => {
-        confirm(`Bạn có chắc chắn muốn xóa sản phẩm có id: ${id} không?`);
-    }
-
-    const openEditModal = (id) => {
-        const product = findProductById(id);
-        document.getElementById('editName').value = product.name;
-        document.getElementById('editPrice').value = product.price;
-        document.getElementById('editCategory').value = product.category;
-        document.getElementById('editStock').value = product.stock;
-
-        $('#editProductModal').modal('show');
-    };
-
-    const openAddProductModal = () => {
-        $('#addProductModal').modal('show');
-    };
-
-</script>
-<script>
     $(document).ready(function () {
-        $('#products').DataTable({
-            initComplete: function () {
-                const table = this.api();
-                const thead = $(table.table().header());
+        console.log('Khởi tạo DataTable...');
 
-                const filterRow = $('<tr></tr>').appendTo(thead);
-
-                table.columns().every(function (index) {
-                    let column = this;
-                    let title = column.header().textContent;
-
-                    if (index === 6) {
-                        filterRow.append('<td></td>');
-                    } else {
-                        let input = $('<input>', {
-                            placeholder: title,
-                            class: 'form-control',
-                            style: 'width: 100%;'
-                        });
-
-                        filterRow.append($('<td></td>').append(input));
-
-                        input.on('keyup', function () {
-                            column.search(this.value).draw();
-                        });
-                    }
-                });
-            },
+        // **Khởi tạo DataTable**
+        $('#productsTable').DataTable({
             ajax: {
-                url: 'https://localhost:44369/api/ProductsAdmin',
-                dataSrc: ''
+                url: apiUrl,
+                type: 'GET',
+                dataSrc: '',
+                error: function (xhr) {
+                    console.error('Lỗi khi tải dữ liệu từ API:', xhr.responseText);
+                    alert('Lỗi: Không thể tải danh sách sản phẩm.');
+                }
             },
             columns: [
                 { data: 'id' },
+                { data: 'name' },
+                { data: 'price', render: function (data) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data); } },
+                { data: 'stock' },
+                { data: 'category.name' },
+                { data: 'brand.name' },
                 {
                     data: null,
-                    render: (data, type, row) => {
-                        const image = row.images[0] || 'default-product.jpg';
-                        const name = row.name || 'Chưa có tên';
-                        return `<img src="${image}" alt="${name}" class="mr-2 rounded-circle shadow" style="height: 50px; width: 50px; object-fit: cover;" />
-                                <a href="#" class="text-body font-weight-semibold">${name}</a>`;
-                    }
-                },
-                {
-                    data: 'price',
-                    render: function (data) {
-                        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data);
-                    }
-                },
-                { data: 'category_id' },
-                { data: 'stock' },
-                {
-                    data: 'created_at',
-                    render: (data) => {
-                        return new Date(data).toLocaleDateString();
-                    }
-                },
-                {
-                    data: 'id',
-                    orderable: false,
-                    render: function (data) {
-                        const editBtn = `<a href="javascript:void(0)" class="btn btn-sm btn-primary me-2 btn-icon editBtn" onclick="openEditModal(${data})" title="Chỉnh sửa">
-                            <i class="bi bi-pencil"></i>
-                         </a>`;
-                        const deleteBtn = `<a href="javascript:void(0)" class="btn btn-sm btn-danger me-2 btn-icon" onclick="deleleProduct(${data})" title="Xóa">
-                            <i class="bi bi-trash"></i>
-                         </a>`;
-                        const detailBtn = `<a href="javascript:void(0)" class="btn btn-sm btn-info btn-icon" onclick="viewProductDetails(${data})" title="Xem chi tiết">
-                            <i class="bi bi-eye"></i>
-                         </a>`;
-
-                        return editBtn + deleteBtn + detailBtn;
+                    render: function (data, type, row) {
+                        return `
+                        <button class="btn btn-primary editBtn" data-id="${row.id}">Sửa</button>
+                        <button class="btn btn-danger deleteBtn" data-id="${row.id}">Xóa</button>
+                    `;
                     }
                 }
-            ],
-            language: {
-                lengthMenu: 'Hiển thị _MENU_ sản phẩm',
-                zeroRecords: 'Không tìm thấy dữ liệu',
-                info: 'Hiển thị _START_ đến _END_ của _TOTAL_ sản phẩm',
-                infoEmpty: 'Hiển thị 0 đến 0 của 0 mục',
-                infoFiltered: '(lọc từ _MAX_ mục)',
-                search: 'Tìm kiếm:',
-                paginate: {
-                    first: 'Đầu',
-                    last: 'Cuối',
-                    next: 'Sau',
-                    previous: 'Trước'
-                },
-                loadingRecords: "Đang tải dữ liệu, vui lòng chờ..."
-            },
-            lengthMenu: [5, 10, 20, 50, 100],
-            pageLength: 50,
-            classes: {
-                sPageButton: 'paginate_button page-item',
-                sPageButtonActive: 'active',
-                sPageButtonDisabled: 'disabled'
-            },
+            ]
+        });
 
-            colReorder: true,
-            fixedHeader: true,
-            responsive: true,
-            autoWidth: true,
+        // **Xử lý thêm sản phẩm**
+        $('#addProductForm').submit(function (e) {
+            e.preventDefault();
+            console.log('Đang xử lý thêm sản phẩm...');
 
-            columnDefs: [
-                {
-                    targets: 0,
-                    width: '5%'
+            const product = {
+                name: $('#name').val(),
+                price: $('#price').val(),
+                stock: $('#stock').val(),
+                categoryId: $('#categoryId').val(),
+                brandId: $('#brandId').val(),
+            };
+
+            console.log('Dữ liệu thêm:', product);
+
+            // Kiểm tra dữ liệu đầu vào
+            if (!product.name || !product.price || !product.stock || !product.categoryId || !product.brandId) {
+                alert('Các trường bắt buộc phải được điền đầy đủ!');
+                return;
+            }
+
+            $.ajax({
+                url: apiUrl,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(product),
+                success: function (data) {
+                    console.log('Thêm sản phẩm thành công!', data);
+                    $('#addProductModal').modal('hide');
+                    $('#addProductForm')[0].reset();
+                    $('#productsTable').DataTable().ajax.reload();
                 },
-                {
-                    targets: [2, 3, 4],
-                    responsivePriority: 2,
-                    width: '15%'
-                },
-                {
-                    targets: 5,
-                    responsivePriority: 0,
-                    width: '10%'
-                },
-                {
-                    targets: -1,
-                    responsivePriority: 1,
-                    className: 'text-center',
-                    width: '15%'
+                error: function (xhr) {
+                    console.error('Lỗi khi thêm sản phẩm:', xhr.responseText);
+                    alert('Lỗi: ' + xhr.responseText);
                 }
-            ],
-            layout: {
-                topStart: {
-                    buttons: [
-                        {
-                            text: '<i class="bi bi-plus-circle me-2"></i>Thêm sản phẩm',
-                            className: 'btn btn-secondary me-2',
-                            action: function () {
-                                openAddProductModal();
-                            }
-                        },
-                        {
-                            extend: 'collection',
-                            text: '<i class="bi bi-download me-2"></i>Xuất dữ liệu',
-                            className: 'btn btn-primary dropdown-toggle me-2',
-                            buttons: [
-                                {
-                                    extend: 'excel',
-                                    text: '<i class="bi bi-file-earmark-excel me-2"></i>Excel',
-                                    className: 'dropdown-item',
-                                    exportOptions: {
-                                        columns: ':visible'
-                                    }
-                                },
-                                {
-                                    extend: 'pdf',
-                                    text: '<i class="bi bi-file-earmark-pdf me-2"></i>PDF',
-                                    className: 'dropdown-item',
-                                    exportOptions: {
-                                        columns: ':visible'
-                                    }
-                                },
-                                {
-                                    extend: 'csv',
-                                    text: '<i class="bi bi-file-earmark-text me-2"></i>CSV',
-                                    className: 'dropdown-item',
-                                    exportOptions: {
-                                        columns: ':visible'
-                                    }
-                                },
-                                {
-                                    extend: 'print',
-                                    text: '<i class="bi bi-printer me-2"></i>In',
-                                    className: 'dropdown-item',
-                                    exportOptions: {
-                                        columns: ':visible'
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            extend: 'colvis',
-                            text: '<i class="bi bi-eye me-2"></i>Hiển thị cột',
-                            className: 'btn btn-secondary'
-                        }
-                    ]
+            });
+        });
+
+        // **Sự kiện chỉnh sửa sản phẩm**
+        $(document).on('click', '.editBtn', function () {
+            const productId = $(this).data('id');
+            console.log('Đang chỉnh sửa sản phẩm ID:', productId);
+
+            if (!productId) {
+                alert('ID sản phẩm không hợp lệ!');
+                return;
+            }
+
+            $.ajax({
+                url: `${apiUrl}/${productId}`,
+                type: 'GET',
+                success: function (data) {
+                    console.log('Thông tin sản phẩm:', data);
+
+                    // Điền dữ liệu vào form
+                    $('#editProductId').val(data.id);
+                    $('#editName').val(data.name);
+                    $('#editPrice').val(data.price);
+                    $('#editStock').val(data.stock);
+                    $('#editCategoryId').val(data.categoryId);
+                    $('#editBrandId').val(data.brandId);
+
+                    // Hiển thị modal chỉnh sửa
+                    $('#editProductModal').modal('show');
+                },
+                error: function (xhr) {
+                    console.error('Lỗi khi lấy thông tin sản phẩm:', xhr.responseText);
+                    alert('Lỗi: Không thể lấy thông tin sản phẩm.');
                 }
+            });
+        });
 
-            },
+        // **Xử lý cập nhật sản phẩm**
+        $('#editProductForm').submit(function (e) {
+            e.preventDefault();
 
+            const productId = $('#editProductId').val();
+            console.log('Đang cập nhật sản phẩm ID:', productId);
+
+            if (!productId) {
+                alert('ID sản phẩm không hợp lệ!');
+                return;
+            }
+
+            const product = {
+                id: productId,
+                name: $('#editName').val(),
+                price: $('#editPrice').val(),
+                stock: $('#editStock').val(),
+                categoryId: $('#editCategoryId').val(),
+                brandId: $('#editBrandId').val(),
+            };
+
+            console.log('Dữ liệu cập nhật:', product);
+
+            $.ajax({
+                url: `${apiUrl}/${productId}`,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(product),
+                success: function () {
+                    console.log('Cập nhật sản phẩm thành công!');
+                    $('#editProductModal').modal('hide');
+                    $('#productsTable').DataTable().ajax.reload();
+                },
+                error: function (xhr) {
+                    console.error('Lỗi khi cập nhật sản phẩm:', xhr.responseText);
+                    alert('Lỗi: ' + xhr.responseText);
+                }
+            });
+        });
+
+        // **Xử lý xóa sản phẩm**
+        $(document).on('click', '.deleteBtn', function () {
+            const productId = $(this).data('id');
+            console.log('Đang xóa sản phẩm ID:', productId);
+
+            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                $.ajax({
+                    url: `${apiUrl}/${productId}`,
+                    type: 'DELETE',
+                    success: function () {
+                        console.log('Xóa sản phẩm thành công!');
+                        $('#productsTable').DataTable().ajax.reload();
+                    },
+                    error: function (xhr) {
+                        console.error('Lỗi khi xóa sản phẩm:', xhr.responseText);
+                        alert('Lỗi: Không thể xóa sản phẩm.');
+                    }
+                });
+            }
+        });
+
+        // **Xử lý menu**
+        $('.toggle-btn').click(function () {
+            $('#sidebar').toggleClass('expand');
         });
     });
-
 </script>
 
 </body>
