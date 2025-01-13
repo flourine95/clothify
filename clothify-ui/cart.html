@@ -182,47 +182,93 @@
 </nav>
 
 <!-- Cart Section -->
-@model List<Product>
-<div class="cart-container">
-  <div class="container">
-    <h1 class="mb-4">Shopping Cart</h1>
-    <div class="row">
-      <div class="col-lg-8">
-        @foreach (var product in Model)
-        {
-        <div class="cart-item">
-          <div class="row align-items-center">
-            <div class="col-3 col-md-2">
-              <img src="@product.ImageUrl" alt="@product.Name" class="img-fluid">
-            </div>
-            <div class="col-6 col-md-7">
-              <h5 class="product-title">@product.Name</h5>
-              <p class="product-size">Size: @product.Size</p>
-              <p class="product-color">Color: @product.Color</p>
-              <a href="@Url.Action("RemoveFromCart", "Cart", new { id = product.ProductId })" class="remove-item"><i class="fas fa-trash-alt"></i> Remove</a>
-            </div>
-            <div class="col-3 col-md-3 text-end">
-              <div class="mb-2">
-                <input type="number" class="form-control quantity-input" value="@product.Quantity" min="1" />
-              </div>
-              <div class="fw-bold">$@product.Price</div>
-            </div>
-          </div>
+  <div class="cart-container">
+    <div class="container">
+      <h1 class="mb-4">Shopping Cart</h1>
+      <div class="row">
+        <div class="col-lg-8" id="cart-items">
+          <!-- Cart items will be dynamically loaded here -->
         </div>
-        }
-      </div>
-      <div class="col-lg-4">
-        <div class="cart-summary">
-          <div class="summary-item">
-            <span>Total</span>
-            <span class="fw-bold">$@Model.Sum(p => p.Price * p.Quantity)</span>
+        <div class="col-lg-4">
+          <div class="cart-summary">
+            <div class="summary-item">
+              <span>Total</span>
+              <span class="fw-bold" id="cart-total">$0.00</span>
+            </div>
+            <button class="btn-checkout">Proceed to Checkout</button>
           </div>
-          <button class="btn-checkout">Proceed to Checkout</button>
         </div>
       </div>
     </div>
   </div>
-</div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      fetch('/api/cart')
+              .then(response => response.json())
+              .then(data => {
+                let cartItemsContainer = document.getElementById('cart-items');
+                let total = 0;
+
+                data.forEach(product => {
+                  total += product.price * product.quantity;
+
+                  let itemHTML = `
+          <div class="cart-item">
+            <div class="row align-items-center">
+              <div class="col-3 col-md-2">
+                <img src="${product.imageUrl}" alt="${product.name}" class="img-fluid">
+              </div>
+              <div class="col-6 col-md-7">
+                <h5 class="product-title">${product.name}</h5>
+                <p class="product-size">Size: ${product.size}</p>
+                <p class="product-color">Color: ${product.color}</p>
+                <a href="#" class="remove-item" data-product-id="${product.productId}"><i class="fas fa-trash-alt"></i> Remove</a>
+              </div>
+              <div class="col-3 col-md-3 text-end">
+                <div class="mb-2">
+                  <input type="number" class="form-control quantity-input" value="${product.quantity}" min="1" data-product-id="${product.productId}" />
+                </div>
+                <div class="fw-bold">$${(product.price).toFixed(2)}</div>
+              </div>
+            </div>
+          </div>`;
+                  cartItemsContainer.innerHTML += itemHTML;
+                });
+
+                document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+
+                // Event listeners cho thay đổi số lượng và xóa sản phẩm
+                document.querySelectorAll('.quantity-input').forEach(input => {
+                  input.addEventListener('change', updateQuantity);
+                });
+
+                document.querySelectorAll('.remove-item').forEach(link => {
+                  link.addEventListener('click', removeItem);
+                });
+              });
+    });
+
+    function updateQuantity(event) {
+      let productId = event.target.dataset.productId;
+      let newQuantity = event.target.value;
+      // Gửi yêu cầu API để cập nhật số lượng
+      fetch(`/api/cart/update/${productId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: newQuantity })
+      }).then(() => location.reload());
+    }
+
+    function removeItem(event) {
+      event.preventDefault();
+      let productId = event.target.dataset.productId;
+      // Gửi yêu cầu API để xóa sản phẩm
+      fetch(`/api/cart/remove/${productId}`, { method: 'POST' })
+              .then(() => location.reload());
+    }
+
+  </script>
 <!-- Footer -->
 <footer class="bg-dark" id="tempaltemo_footer">
   <div class="container">

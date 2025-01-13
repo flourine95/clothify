@@ -297,7 +297,7 @@
                                         <button type="submit" class="btn btn-success btn-lg" name="submit" value="buy">Buy</button>
                                     </div>
                                     <div class="col d-grid">
-                                        <button type="submit" class="btn btn-success btn-lg" name="submit" value="addtocard">Add To Cart</button>
+                                        <button type="button" class="btn btn-success btn-lg" id="add-to-cart" data-product-id="123" data-product-price="25.00">Add To Cart</button>
                                     </div>
                                 </div>
                             </form>
@@ -882,6 +882,34 @@
 
     </footer>
     <!-- End Footer -->
+
+    <script>document.getElementById('add-to-cart').addEventListener('click', function() {
+        const productId = this.getAttribute('data-product-id');
+        const quantity = document.getElementById('var-value').textContent; // Lấy số lượng
+        const size = document.getElementById('product-size').value; // Lấy kích thước
+
+        const data = {
+            productId: productId,
+            quantity: quantity,
+            size: size // Thêm kích thước vào dữ liệu
+        };
+
+        fetch('/api/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Cập nhật số lượng trong giỏ hàng (badge)
+                document.querySelector('.nav-icon .badge').textContent = data.cartTotalItems;
+            })
+            .catch(error => {
+                console.error('Có lỗi xảy ra:', error);
+            });
+    });
+    </script>
+
 
     <!-- Start Script -->
     <script src="assets/js/jquery-1.11.0.min.js"></script>

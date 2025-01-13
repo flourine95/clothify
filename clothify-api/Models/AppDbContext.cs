@@ -26,7 +26,7 @@ public class AppDbContext : DbContext
     public DbSet<UserVoucher> UserVouchers { get; set; }
     public DbSet<Voucher> Vouchers { get; set; }
     public DbSet<Wishlist> Wishlists { get; set; }
-    public DbSet<Cart> Carts { get; set; }
+    public DbSet<Order> Carts { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {

@@ -15,15 +15,13 @@ namespace clothify_api.Controllers
             _context = context;
         }
         
-        
-        // Thêm sản phẩm vào giỏ
         [HttpPost("add")]
-        public IActionResult AddToCart(int productId, int quantity)
+        public IActionResult AddToCart(int productId, int quantity, string size)
         {
-            var userId = 1; // ID của người dùng (có thể lấy từ token hoặc session)
-            var cart = _context.Carts.FirstOrDefault(c => c.UserId == userId);
+            var userId = 1; // Placeholder for actual user ID retrieval
+            var cart = _context.Orders.Include(o => o.Items).FirstOrDefault(o => o.UserId == userId && o.Status == 0); // Assuming status 0 is 'cart'
             var product = _context.Products.FirstOrDefault(p => p.Id == productId);
-            
+    
             if (product == null)
             {
                 return NotFound("Sản phẩm không tồn tại.");
@@ -31,22 +29,23 @@ namespace clothify_api.Controllers
 
             if (cart == null)
             {
-                cart = new Cart { UserId = userId };
-                _context.Carts.Add(cart);
+                cart = new Order { UserId = userId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, Status = 0 };
+                _context.Orders.Add(cart);
             }
 
-            cart.AddItem(product, quantity);
+            // Đảm bảo phương thức AddItem đã có thể xử lý kích thước
+            cart.AddItem(product, quantity, size); // Thêm tham số size vào đây
             _context.SaveChanges();
 
             return Ok(cart);
         }
 
-        // Xóa sản phẩm khỏi giỏ
+
         [HttpPost("remove")]
         public IActionResult RemoveFromCart(int productId)
         {
-            var userId = 1; // ID của người dùng
-            var cart = _context.Carts.FirstOrDefault(c => c.UserId == userId);
+            var userId = 1; // Placeholder for actual user ID retrieval
+            var cart = _context.Orders.Include(o => o.Items).FirstOrDefault(o => o.UserId == userId && o.Status == 0);
             if (cart == null)
             {
                 return NotFound("Giỏ hàng không tồn tại.");
@@ -58,13 +57,12 @@ namespace clothify_api.Controllers
             return Ok(cart);
         }
 
-        // Lấy giỏ hàng của người dùng
         [HttpGet]
         public IActionResult GetCart()
         {
-            var userId = 1; // ID người dùng
-            var cart = _context.Carts.Include(c => c.Items).ThenInclude(i => i.Product)
-                                     .FirstOrDefault(c => c.UserId == userId);
+            var userId = 1; // Placeholder for actual user ID retrieval
+            var cart = _context.Orders.Include(o => o.Items).ThenInclude(i => i.Product)
+                                      .FirstOrDefault(o => o.UserId == userId && o.Status == 0);
             if (cart == null)
             {
                 return NotFound("Giỏ hàng không tồn tại.");
