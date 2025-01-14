@@ -392,7 +392,7 @@
 </div>
 
 <script>
-    const apiUrl = 'https://localhost:44369/api/UserAdmin'; // URL của API
+    const apiUrl = 'https://localhost:44369/api/UserAdmin'; 
 
     $(document).ready(function () {
         console.log('Khởi tạo DataTable...');
@@ -430,8 +430,9 @@
 
         // **Xử lý thêm người dùng**
         $('#addUserForm').submit(function (e) {
-            e.preventDefault();
-            console.log('Đang xử lý thêm người dùng...');
+            e.preventDefault(); // Ngừng reload trang khi submit form
+
+            // Lấy dữ liệu từ form
             const user = {
                 fullname: $('#fullname').val(),
                 email: $('#email').val(),
@@ -444,27 +445,30 @@
                 oauthProvider: $('#oauthProvider').val()
             };
 
-            console.log('Dữ liệu thêm:', user);
-
-            // Kiểm tra dữ liệu đầu vào
+            // Kiểm tra các trường bắt buộc
             if (!user.avatar || !user.oauthId || !user.password || !user.oauthProvider) {
                 alert('Các trường bắt buộc phải được điền đầy đủ!');
                 return;
             }
 
+            // Gửi request AJAX để thêm người dùng
             $.ajax({
-                url: apiUrl,
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(user),
-                success: function () {
+                url: apiUrl,  // Thay apiUrl bằng URL đúng cho API thêm người dùng
+                type: 'POST',  // Phương thức POST
+                contentType: 'application/json',  // Định dạng dữ liệu gửi đi là JSON
+                data: JSON.stringify(user),  // Chuyển đổi object user thành chuỗi JSON
+                success: function (response) {
                     console.log('Thêm người dùng thành công!');
-                    $('#addUserModal').modal('hide');
-                    $('#addUserForm')[0].reset();
-                    $('#usersTable').DataTable().ajax.reload();
+                    // Hiển thị thông báo thành công
+                    $('#addUserForm')[0].reset();  // Reset form
+                    $('#usersTable').DataTable().ajax.reload();  // Reload bảng dữ liệu
+                    $('#addUserModal').modal('hide');  // Đóng modal
+                    $('body').removeClass('modal-open');  // Xóa lớp modal mở
+                    $('.modal-backdrop').remove();  // Xóa lớp overlay
                 },
                 error: function (xhr) {
                     console.error('Lỗi khi thêm người dùng:', xhr.responseText);
+                    // Kiểm tra lỗi nếu email đã tồn tại
                     if (xhr.status === 400 && xhr.responseText.includes('email already exists')) {
                         alert('Email đã tồn tại!');
                     } else {
@@ -472,8 +476,7 @@
                     }
                 }
             });
-        });
-
+        })
         // **Sự kiện chỉnh sửa người dùng**
         $(document).on('click', '.editBtn', function () {
             const userId = $(this).data('id');
