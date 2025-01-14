@@ -1,6 +1,6 @@
 ﻿namespace clothify_api.Models;
 
-public class UserAdd
+public class DTOUserAdd
 {
     public string Email { get; set; }
     public string Password { get; set; }

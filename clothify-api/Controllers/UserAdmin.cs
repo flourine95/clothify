@@ -9,24 +9,13 @@ namespace clothify_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserAdmin : ControllerBase
+    public class UserAdmin(AppDbContext context) : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public UserAdmin(AppDbContext context)
-        {
-            _context = context;
-        }
-
         // GET: api/UserAdmin
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers(int page = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {
-            var users = await _context.Users
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
+            var users = await context.Users.ToListAsync();
             return Ok(users);
         }
 
@@ -34,7 +23,7 @@ namespace clothify_api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.Users
+            var user = await context.Users
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
@@ -47,7 +36,7 @@ namespace clothify_api.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<User>> AddUser([FromBody] UserAdd userAdd)
+        public async Task<ActionResult<User>> AddUser([FromBody] DTOUserAdd userAdd)
         {
             // Kiểm tra thông tin bắt buộc
             if (string.IsNullOrEmpty(userAdd.Email) || string.IsNullOrEmpty(userAdd.Fullname))
@@ -56,7 +45,7 @@ namespace clothify_api.Controllers
             }
 
             // Kiểm tra trùng email
-            if (_context.Users.Any(u => u.Email == userAdd.Email))
+            if (context.Users.Any(u => u.Email == userAdd.Email))
             {
                 return Conflict("Email đã tồn tại.");
             }
@@ -78,15 +67,15 @@ namespace clothify_api.Controllers
             };
 
             // Thêm người dùng vào cơ sở dữ liệu
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
 
             // Trả về thông tin người dùng đã thêm
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdate userUpdate)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] DTOUserUpdate userUpdate)
         {
             if (userUpdate == null)
             {
@@ -99,7 +88,7 @@ namespace clothify_api.Controllers
                 return BadRequest("ID trong URL không khớp với ID trong dữ liệu.");
             }
 
-            var existingUser = await _context.Users.FindAsync(id);
+            var existingUser = await context.Users.FindAsync(id);
             if (existingUser == null)
             {
                 return NotFound($"Không tìm thấy người dùng với ID {id}.");
@@ -131,7 +120,7 @@ namespace clothify_api.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -145,19 +134,19 @@ namespace clothify_api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (_context.Orders.Any(o => o.UserId == id))
+            if (context.Orders.Any(o => o.UserId == id))
             {
                 return BadRequest("Không thể xóa người dùng này vì họ có đơn hàng.");
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            context.Users.Remove(user);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }

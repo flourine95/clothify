@@ -6,12 +6,11 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Quản lý sản phẩm</title>
+    <title>Quản lý đơn hàng</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
@@ -155,7 +154,7 @@
             display: none;
         }
 
-        #sidebar:not(.expand) .sidebar-item:hover .has-dropdown+.sidebar-dropdown {
+        #sidebar:not(.expand) .sidebar-item:hover .has-dropdown + .sidebar-dropdown {
             display: block;
             max-height: 15em;
             width: 100%;
@@ -188,11 +187,30 @@
         .navbar-expand .navbar-collapse {
             min-width: 200px;
         }
+
+        .avatar {
+            height: 40px;
+            width: 40px;
+        }
+
+
+        @media (min-width: 768px) {
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #high-performing-product {
+            width: 100% !important;
+            height: 100% !important;
+        }
     </style>
     <link rel="stylesheet" href="dashboard.css">
 
 </head>
-
 <body>
 <div class="wrapper ">
     <aside id="sidebar">
@@ -241,113 +259,115 @@
                     <span>Thông tin cá nhân</span>
                 </a>
             </li>
-
-            <li class="sidebar-footer">
+            <li class="sidebar-item">
                 <a href="#" class="sidebar-link">
                     <i class="bi bi-box-arrow-left"></i>
                     <span>Đăng xuất</span>
                 </a>
             </li>
-
         </ul>
     </aside>
     <div class="main">
 
-        <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel"
+        <div class="modal fade" id="addOrderModal" tabindex="-1" aria-labelledby="addOrderModalLabel"
              aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addProductModalLabel">Thêm sản phẩm mới</h5>
+                        <h5 class="modal-title" id="addOrderModalLabel">Thêm đơn hàng mới</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="addProductForm">
+                        <form id="addOrderForm">
                             <div class="mb-3">
-                                <label for="addName" class="form-label">Tên sản phẩm</label>
-                                <input type="text" class="form-control" id="addName" required>
+                                <label for="addCustomer" class="form-label">Khách hàng</label>
+                                <input type="text" class="form-control" id="addCustomer" required>
                             </div>
                             <div class="mb-3">
-                                <label for="addPrice" class="form-label">Giá</label>
-                                <input type="number" class="form-control" id="addPrice" required>
+                                <label for="addAddress" class="form-label">Địa chỉ</label>
+                                <input type="text" class="form-control" id="addAddress" required>
                             </div>
                             <div class="mb-3">
-                                <label for="addCategory" class="form-label">Danh mục</label>
-                                <input type="text" class="form-control" id="addCategory" required>
+                                <label for="addTotalAmount" class="form-label">Tổng tiền</label>
+                                <input type="number" class="form-control" id="addTotalAmount" required>
                             </div>
                             <div class="mb-3">
-                                <label for="addStock" class="form-label">Số lượng tồn kho</label>
-                                <input type="number" class="form-control" id="addStock" required>
+                                <label for="addCreatedAt" class="form-label">Ngày đặt</label>
+                                <input type="date" class="form-control" id="addCreatedAt" required>
                             </div>
                             <div class="mb-3">
-                                <label for="addImage" class="form-label">Hình ảnh</label>
-                                <input type="file" class="form-control" id="addImage" accept="image/*">
+                                <label for="addStatus" class="form-label">Trạng thái</label>
+                                <input type="text" class="form-control" id="addStatus" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addPayment" class="form-label">Thanh toán</label>
+                                <input type="text" class="form-control" id="addPayment" required>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" form="addProductForm" class="btn btn-primary">Thêm sản phẩm</button>
+                        <button type="submit" form="addOrderForm" class="btn btn-primary">Thêm đơn hàng</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel"
+        <div class="modal fade" id="editOrderModal" tabindex="-1" aria-labelledby="editOrderModalLabel"
              aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editProductModalLabel">Chỉnh sửa sản phẩm</h5>
+                        <h5 class="modal-title" id="editOrderModalLabel">Chỉnh sửa đơn hàng</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="editProductForm">
+                        <form id="editOrderForm">
                             <div class="mb-3">
-                                <label for="editName" class="form-label">Tên sản phẩm</label>
-                                <input type="text" class="form-control" id="editName" required>
+                                <label for="editCustomer" class="form-label">Khách hàng</label>
+                                <input type="text" class="form-control" id="editCustomer" required>
                             </div>
                             <div class="mb-3">
-                                <label for="editPrice" class="form-label">Giá</label>
-                                <input type="number" class="form-control" id="editPrice" required>
+                                <label for="editAddress" class="form-label">Địa chỉ</label>
+                                <input type="number" class="form-control" id="editAddress" required>
                             </div>
                             <div class="mb-3">
-                                <label for="editCategory" class="form-label">Danh mục</label>
-                                <input type="text" class="form-control" id="editCategory" required>
+                                <label for="editTotalAmount" class="form-label">Tổng tiền</label>
+                                <input type="text" class="form-control" id="editTotalAmount" required>
                             </div>
                             <div class="mb-3">
-                                <label for="editStock" class="form-label">Số lượng tồn kho</label>
-                                <input type="number" class="form-control" id="editStock" required>
+                                <label for="editCreatedAt" class="form-label">Ngày đặt</label>
+                                <input type="number" class="form-control" id="editCreatedAt" required>
                             </div>
                             <div class="mb-3">
-                                <label for="editImage" class="form-label">Hình ảnh</label>
-                                <input type="file" class="form-control" id="editImage" accept="image/*">
+                                <label for="editStatus" class="form-label">Trạng thái</label>
+                                <input type="text" class="form-control" id="editStatus" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editPayment" class="form-label">Thanh toán</label>
+                                <input type="text" class="form-control" id="editPayment" required>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" form="editProductForm" class="btn btn-primary">Lưu thay đổi</button>
+                        <button type="submit" form="editOrderForm" class="btn btn-primary">Lưu thay đổi</button>
                     </div>
                 </div>
             </div>
         </div>
 
 
-        <div id="productDetailModal" class="modal fade" tabindex="-1" role="dialog">
+        <div id="orderDetailModal" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Chi tiết sản phẩm</h5>
+                        <h5 class="modal-title">Chi tiết đơn hàng</h5>
                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="text-center mb-4">
-                            <img id="detail-image" alt="Hình ảnh sản phẩm" class="img-fluid" src="">
-                        </div>
-
                         <div class="row mb-3">
                             <div class="col-4">
                                 <strong>ID:</strong>
@@ -358,43 +378,43 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-4">
-                                <strong>Tên sản phẩm:</strong>
+                                <strong>Khách hàng:</strong>
                             </div>
                             <div class="col-8">
-                                <span id="detail-name"></span>
+                                <span id="detail-customer"></span>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-4">
-                                <strong>Giá:</strong>
+                                <strong>Ngày đặt:</strong>
                             </div>
                             <div class="col-8">
-                                <span id="detail-price"></span>
+                                <span id="detail-created-at"></span>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-4">
-                                <strong>Danh mục:</strong>
+                                <strong>Tổng tiền:</strong>
                             </div>
                             <div class="col-8">
-                                <span id="detail-category"></span>
+                                <span id="detail-total-amount"></span>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-4">
-                                <strong>Số lượng tồn kho:</strong>
+                                <strong>Trạng thái:</strong>
                             </div>
                             <div class="col-8">
-                                <span id="detail-stock"></span>
+                                <span id="detail-status"></span>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-4">
-                                <strong>Ngày tạo:</strong>
+                                <strong>Thanh toán:</strong>
                             </div>
                             <div class="col-8">
-                                <span id="detail-created"></span>
+                                <span id="detail-payment"></span>
                             </div>
                         </div>
 
@@ -413,36 +433,38 @@
                     <div class="col-12">
                         <div class="row">
                             <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="page-title">Danh sách sản phẩm</h4>
+                                <h4 class="page-title">Danh sách đơn hàng</h4>
 
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <table id="products" class="table table-striped table-hover table-bordered" style="width:100%">
+                <table id="orders" class="table table-striped table-hover table-bordered" style="width:100%">
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th>Sản phẩm</th>
-                        <th>Giá</th>
-                        <th>Danh mục</th>
-                        <th>Số lượng tồn kho</th>
-                        <th>Ngày tạo</th>
+                        <th>ID khách hàng</th>
+                        <th>Địa chỉ</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày đặt</th>
+                        <th>Ngày cập nhật</th>
                         <th>Thao tác</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <!-- Dữ liệu sản phẩm sẽ được load ở đây -->
+
                     </tbody>
                     <tfoot>
                     <tr>
                         <th>#</th>
-                        <th>Sản phẩm</th>
-                        <th>Giá</th>
-                        <th>Danh mục</th>
-                        <th>Số lượng tồn kho</th>
-                        <th>Ngày tạo</th>
+                        <th>ID khách hàng</th>
+                        <th>Địa chỉ</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày đặt</th>
+                        <th>Ngày cập nhật</th>
                         <th>Thao tác</th>
                     </tr>
                     </tfoot>
@@ -467,39 +489,191 @@
     </div>
 </div>
 <script>
-    const apiUrl = 'https://localhost:44369/api/ProductsAdmin'; // URL của API sản phẩm
+    const apiUrl = 'https://localhost:44369/api/OrderAdmin';  // Update the API URL for order management
 
     $(document).ready(function () {
-        $('#products').DataTable({
+        console.log('Khởi tạo DataTable...');
+
+        // **Khởi tạo DataTable cho danh sách đơn hàng**
+        $('#orders').DataTable({
             ajax: {
                 url: apiUrl,
                 type: 'GET',
                 dataSrc: '',
                 error: function (xhr) {
                     console.error('Lỗi khi tải dữ liệu từ API:', xhr.responseText);
-                    alert('Lỗi: Không thể tải danh sách người dùng.');
+                    alert('Lỗi: Không thể tải danh sách đơn hàng.');
                 }
             },
             columns: [
                 { data: 'id' },
-                { data: 'name' },
-                { data: 'price', render: function (data) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data); } },
-                { data: 'stock' },
-                { data: 'category.name' },
-                { data: 'brand.name' },
+                { data: 'userId' },
+                { data: 'userAddressId' },
+                { data: 'totalAmount' },
+                { data: 'status' },
+                { data: 'createdAt' },
+                { data: 'updatedAt' },
                 {
                     data: null,
                     render: function (data, type, row) {
                         return `
-                        <button class="btn btn-primary editBtn" data-id="${row.id}">Sửa</button>
-                        <button class="btn btn-danger deleteBtn" data-id="${row.id}">Xóa</button>
-                    `;
+                            <button class="btn btn-info viewBtn" data-id="${row.id}">Chi tiết</button>
+                            <button class="btn btn-primary editBtn" data-id="${row.id}">Sửa</button>
+                            <button class="btn btn-danger deleteBtn" data-id="${row.id}">Xóa</button>
+                        `;
                     }
                 }
-            ],
+            ]
+        });
+
+        // **Thêm đơn hàng mới**
+        $('#addOrderForm').submit(function (e) {
+            e.preventDefault();  // Ngừng reload trang khi submit form
+
+            // Lấy dữ liệu từ form
+            const order = {
+                customerId: $('#addCustomer').val(),
+                address: $('#addAddress').val(),
+                totalAmount: $('#addTotalAmount').val(),
+                createdAt: $('#addCreatedAt').val(),
+                status: $('#addStatus').val(),
+                payment: $('#addPayment').val()
+            };
+
+            // Gửi request AJAX để thêm đơn hàng
+            $.ajax({
+                url: apiUrl,  // Thay apiUrl bằng URL đúng cho API thêm đơn hàng
+                type: 'POST',  // Phương thức POST
+                contentType: 'application/json',  // Định dạng dữ liệu gửi đi là JSON
+                data: JSON.stringify(order),  // Chuyển đổi object order thành chuỗi JSON
+                success: function (response) {
+                    console.log('Thêm đơn hàng thành công!');
+                    $('#addOrderForm')[0].reset();  // Reset form
+                    $('#orders').DataTable().ajax.reload();  // Reload bảng dữ liệu
+                    $('#addOrderModal').modal('hide');  // Đóng modal
+                },
+                error: function (xhr) {
+                    console.error('Lỗi khi thêm đơn hàng:', xhr.responseText);
+                    alert('Lỗi: ' + xhr.responseText);
+                }
+            });
+        });
+
+        // **Chỉnh sửa đơn hàng**
+        $(document).on('click', '.editBtn', function () {
+            const orderId = $(this).data('id');
+            console.log('Đang chỉnh sửa đơn hàng ID:', orderId);
+
+            $.ajax({
+                url: `${apiUrl}/${orderId}`,
+                type: 'GET',
+                success: function (data) {
+                    console.log('Thông tin đơn hàng:', data);
+
+                    // Điền dữ liệu vào form
+                    $('#editOrderId').val(data.id);
+                    $('#editCustomer').val(data.customerId);
+                    $('#editAddress').val(data.address);
+                    $('#editTotalAmount').val(data.totalAmount);
+                    $('#editCreatedAt').val(data.createdAt);
+                    $('#editStatus').val(data.status);
+                    $('#editPayment').val(data.payment);
+
+                    // Hiển thị modal chỉnh sửa
+                    $('#editOrderModal').modal('show');
+                },
+                error: function (xhr) {
+                    console.error('Lỗi khi lấy thông tin đơn hàng:', xhr.responseText);
+                    alert('Lỗi: Không thể lấy thông tin đơn hàng.');
+                }
+            });
+        });
+
+        // **Cập nhật đơn hàng**
+        $('#editOrderForm').submit(function (e) {
+            e.preventDefault();  // Ngừng reload trang khi submit form
+
+            const orderId = $('#editOrderId').val();
+            console.log('Đang cập nhật đơn hàng ID:', orderId);
+
+            const order = {
+                id: orderId,
+                customerId: $('#editCustomer').val(),
+                address: $('#editAddress').val(),
+                totalAmount: $('#editTotalAmount').val(),
+                createdAt: $('#editCreatedAt').val(),
+                status: $('#editStatus').val(),
+                payment: $('#editPayment').val()
+            };
+
+            $.ajax({
+                url: `${apiUrl}/${orderId}`,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(order),
+                success: function () {
+                    console.log('Cập nhật đơn hàng thành công!');
+                    $('#editOrderModal').modal('hide');
+                    $('#orders').DataTable().ajax.reload();
+                },
+                error: function (xhr) {
+                    console.error('Lỗi khi cập nhật đơn hàng:', xhr.responseText);
+                    alert('Lỗi: ' + xhr.responseText);
+                }
+            });
+        });
+
+        // **Xóa đơn hàng**
+        $(document).on('click', '.deleteBtn', function () {
+            const orderId = $(this).data('id');
+            console.log('Đang xóa đơn hàng ID:', orderId);
+
+            if (confirm('Bạn có chắc muốn xóa đơn hàng này?')) {
+                $.ajax({
+                    url: `${apiUrl}/${orderId}`,
+                    type: 'DELETE',
+                    success: function () {
+                        console.log('Xóa đơn hàng thành công!');
+                        $('#orders').DataTable().ajax.reload();
+                    },
+                    error: function (xhr) {
+                        console.error('Lỗi khi xóa đơn hàng:', xhr.responseText);
+                        alert('Lỗi: Không thể xóa đơn hàng.');
+                    }
+                });
+            }
+        });
+
+        // **Xem chi tiết đơn hàng**
+        $(document).on('click', '.viewBtn', function () {
+            const orderId = $(this).data('id');
+            console.log('Đang xem chi tiết đơn hàng ID:', orderId);
+
+            $.ajax({
+                url: `${apiUrl}/${orderId}`,
+                type: 'GET',
+                success: function (data) {
+                    console.log('Thông tin chi tiết đơn hàng:', data);
+
+                    // Hiển thị chi tiết trong modal
+                    $('#detail-id').text(data.id);
+                    $('#detail-customer').text(data.customerId);
+                    $('#detail-created-at').text(data.createdAt);
+                    $('#detail-total-amount').text(data.totalAmount);
+                    $('#detail-status').text(data.status);
+                    $('#detail-payment').text(data.payment);
+
+                    // Hiển thị modal chi tiết
+                    $('#orderDetailModal').modal('show');
+                },
+                error: function (xhr) {
+                    console.error('Lỗi khi lấy chi tiết đơn hàng:', xhr.responseText);
+                    alert('Lỗi: Không thể lấy chi tiết đơn hàng.');
+                }
+            });
         });
     });
 </script>
-</body>
 
+</body>
 </html>

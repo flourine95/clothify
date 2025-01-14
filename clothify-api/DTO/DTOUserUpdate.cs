@@ -1,6 +1,6 @@
 ﻿namespace clothify_api.Models;
 
-public class UserUpdate
+public class DTOUserUpdate
 {
     public string Fullname { get; set; }  // Trường Fullname cho tên người dùng
     public string Email { get; set; }     // Trường Email cho địa chỉ email người dùng

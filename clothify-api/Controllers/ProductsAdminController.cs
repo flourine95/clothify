@@ -19,17 +19,16 @@ public class ProductsAdminController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Product>>> GetProducts(int page = 1, int pageSize = 10)
+    public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
     {
         var products = await _context.Products
             .Include(p => p.Category)
             .Include(p => p.Brand)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
             .ToListAsync();
 
-        return products;
+        return Ok(products);
     }
+
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetProduct(int id)
